@@ -3,9 +3,9 @@ from concurrent.futures import ThreadPoolExecutor
 from ase.calculators.calculator import Calculator
 from ase.calculators.qmmm import SimpleQMMM
 
-from AIMD.protein import Protein
-from Calculators.device_strategy import DeviceStrategy
-from utils.utils import WorkQueue, execution_wrapper
+from src.AIMD.protein import Protein
+from src.Calculators.device_strategy import DeviceStrategy
+from src.utils.utils import WorkQueue, execution_wrapper
 
 
 class AsyncQMMM(SimpleQMMM):
