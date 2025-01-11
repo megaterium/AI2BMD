@@ -6,7 +6,7 @@ from torch.special import erf, erfc
 from torch_geometric.nn import radius_graph
 from torch_scatter import scatter_add
 
-from AIMD.protein import Protein
+from src.AIMD.protein import Protein
 
 
 def setup(
