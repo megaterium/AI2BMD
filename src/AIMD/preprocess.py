@@ -5,19 +5,27 @@ import subprocess
 import sys
 from typing import List, Tuple
 
-from AIMD import arguments, envflags
-from Calculators.device_strategy import DeviceStrategy
-from utils.pdb import reorder_atoms, standardise_pdb, translate_coord_pdb, reorder_coord_amber2tinker
-from utils.system import get_physical_core_count
-from utils.utils import record_time
+from src.AIMD import arguments, envflags
+from src.Calculators.device_strategy import DeviceStrategy
+from src.utils.pdb import reorder_atoms, standardise_pdb, translate_coord_pdb, reorder_coord_amber2tinker
+from src.utils.system import get_physical_core_count
+from src.utils.utils import record_time
+
+# TODO: change these dynamically from the run code.
+# Equlibration nstlim variables
+NSTLIM_1 = 10000
+NSTLIM_2 = 10000
+NSTLIM_3 = 10000
+NSTLIM_4 = 10000
+
+
 
 
 def run_command(command: str, cwd_path: str) -> None:
     r"""
     Create a child process and run the command in the cwd_path.
-    It is more safe than os.system.
+    It is safer than os.system.
     """
-
     if envflags.DEBUG_RC:
         print("run_command: ", command)
 
@@ -34,11 +42,10 @@ def run_command(command: str, cwd_path: str) -> None:
     if proc.returncode:
         path = cwd_path
         msg = (
-            'Failed with command "{}" failed in '
-            ""
-            "{} with error code {}"
-            "stdout: {}"
-            "stderr: {}".format(command, path, proc.returncode, out, err)
+            f'Failed with command "{command}" failed in '
+            f"{path} with error code {proc.returncode}\n"
+            f"stdout: {out}\n"
+            f"stderr: {err}"
         )
         raise ValueError(msg)
     elif envflags.DEBUG_RC:
@@ -48,8 +55,9 @@ def run_command(command: str, cwd_path: str) -> None:
         print(err)
 
 
-def run_command_mamba(command: str, cwd_path: str, mamba_env: str) -> None:
-    command_with_env = f'bash -c "source  /etc/profile.d/source_conda.sh &&  mamba activate {mamba_env} && {command}"'
+def run_command_conda(command: str, cwd_path: str, conda_env: str) -> None:
+    conda_sh_path = "/home/megaterium/anaconda3/etc/profile.d/conda.sh"  # Update this path
+    command_with_env = f'bash -c "source {conda_sh_path} && conda activate {conda_env} && {command}"'
     run_command(command_with_env, cwd_path)
 
 
@@ -123,7 +131,7 @@ class Preprocess(object):
                     "quit",
                 )
             )
-        run_command_mamba("tleap -f t1.in", self.command_save_path, "ambertools")
+        run_command_conda("tleap -f t1.in", self.command_save_path, "proteins")
         text = open(f"{self.prot_path}1.top").read()
         water_num = text.count("WAT")
         pos_num = (
@@ -172,7 +180,7 @@ class Preprocess(object):
                         "quit",
                     )
                 )
-        run_command_mamba("tleap -f t2.in", self.command_save_path, "ambertools")
+        run_command_conda("tleap -f t2.in", self.command_save_path, "proteins")
 
         maxcyc = arguments.get().max_cyc
 
@@ -194,7 +202,7 @@ class Preprocess(object):
                     "trajin {}.inpcrd".format(self.prot_path),
                     "trajout {}_tleap1.pdb".format(self.prot_path)
                 ))
-            run_command_mamba("cpptraj -i convert_pdb.in", self.command_save_path, "ambertools")
+            run_command_conda("cpptraj -i convert_pdb.in", self.command_save_path, "proteins")
 
             # translate pdb to center
             pbc_x, pbc_y, pbc_z = translate_coord_pdb(f"{self.prot_path}_tleap1.pdb", f"{self.prot_path}_tleap.pdb")
@@ -264,9 +272,9 @@ class Preprocess(object):
                 )
             )
 
-        run_command_mamba(
+        run_command_conda(
             f"sander -O -i min.in -p {solv_top} -c {solv_inpcrd} -o min.out -inf min.info "
-            f"-r min.rst -x min.mdcrd -ref {solv_inpcrd}", self.command_save_path, "ambertools"
+            f"-r min.rst -x min.mdcrd -ref {solv_inpcrd}", self.command_save_path, "proteins"
         )
 
         """Sander heat steps for sander-based pre-equilibration.
@@ -274,7 +282,7 @@ class Preprocess(object):
         Output: heat.rst
         By-products: heat.in heat.out
         """
-        nstlim = 20000
+        nstlim = NSTLIM_1
         data = f"""heating from 0K too {self.temp_k}K
 &cntrl
  imin = 0,
@@ -303,9 +311,9 @@ END
         with open("heat.in", "w") as f:
             f.write(data)
 
-        run_command_mamba(
+        run_command_conda(
             f"sander -O -i heat.in -p {solv_top} -c min.rst -o heat.out -inf heat.info "
-            "-r heat.rst -x heat.mdcrd -ref min.rst", self.command_save_path, "ambertools"
+            "-r heat.rst -x heat.mdcrd -ref min.rst", self.command_save_path, "proteins"
         )
 
         """Sander-based pre-equilibration stage 1.
@@ -313,7 +321,7 @@ END
         Output: preeq1.rst
         By-products: preeq1.in preeq1.out
         """
-        nstlim = 20000
+        nstlim = NSTLIM_2
         data = f"""pre-eq1, NVT
 &cntrl
  imin=0,
@@ -347,9 +355,9 @@ END
         with open("preeq1.in", "w") as f:
             f.write(data)
 
-        run_command_mamba(
+        run_command_conda(
             f"sander -O -i preeq1.in -c heat.rst -o preeq1.out -inf preeq1.info "
-            f"-r preeq1.rst -x preeq1.mdcrd  -ref heat.rst -p {solv_top}", self.command_save_path, "ambertools"
+            f"-r preeq1.rst -x preeq1.mdcrd  -ref heat.rst -p {solv_top}", self.command_save_path, "proteins"
         )
 
         """Sander-based pre-equilibration stage 2.
@@ -358,7 +366,7 @@ END
         By-products: preeq2.in preeq2.out
         """
 
-        nstlim = 20000
+        nstlim = NSTLIM_3
         data = f"""pre-eq2, NVT
 &cntrl
  imin=0,
@@ -392,9 +400,9 @@ END
         with open("preeq2.in", "w") as f:
             f.write(data)
 
-        run_command_mamba(
+        run_command_conda(
             f"sander -O -i preeq2.in -c preeq1.rst -o preeq2.out -inf preeq2.info "
-            f"-r preeq2.rst -x preeq2.mdcrd  -ref preeq1.rst -p {solv_top}", self.command_save_path, "ambertools"
+            f"-r preeq2.rst -x preeq2.mdcrd  -ref preeq1.rst -p {solv_top}", self.command_save_path, "proteins"
         )
 
         """Sander-based pre-equilibration stage 3.
@@ -402,7 +410,7 @@ END
         Output: preeq3.rst
         By-products: preeq3.in preeq3.out
         """
-        nstlim = 20000
+        nstlim = NSTLIM_4
         data = f"""pre-eq3, NVT
 &cntrl
  imin=0,
@@ -430,9 +438,9 @@ END
         with open("preeq3.in", "w") as f:
             f.write(data)
 
-        run_command_mamba(
+        run_command_conda(
             f"sander -O -i preeq3.in -c preeq2.rst -o preeq3.out -inf preeq3.info "
-            f"-r preeq3.rst -x preeq3.mdcrd  -ref preeq2.rst -p {solv_top}", self.command_save_path, "ambertools"
+            f"-r preeq3.rst -x preeq3.mdcrd  -ref preeq2.rst -p {solv_top}", self.command_save_path, "proteins"
         )
 
         """Sander-based pre-equilibration stage 4.
@@ -441,7 +449,7 @@ END
         By-products: preeq4.in preeq4.out
         """
 
-        nstlim = 100000
+        nstlim = NSTLIM_4
         data = f"""pre-eq4, NPT
 &cntrl
  imin=0,
@@ -471,9 +479,9 @@ END
         with open("preeq4.in", "w") as f:
             f.write(data)
 
-        run_command_mamba(
+        run_command_conda(
             f"sander -O -i preeq4.in -c preeq3.rst -o preeq4.out -inf preeq4.info "
-            f"-r preeq.rst -x preeq4.mdcrd  -ref preeq3.rst -p {solv_top}", self.command_save_path, "ambertools"
+            f"-r preeq.rst -x preeq4.mdcrd  -ref preeq3.rst -p {solv_top}", self.command_save_path, "proteins"
         )
 
         # generate_pdb
@@ -487,7 +495,7 @@ END
                 )
             )
 
-        run_command_mamba("cpptraj -i gene_pdb_from_rst.in", self.command_save_path, "ambertools")
+        run_command_conda("cpptraj -i gene_pdb_from_rst.in", self.command_save_path, "proteins")
 
         # get solute only pdb，remove water and ions
         with open(f"{self.prot_path}-preeq.pdb") as f:
