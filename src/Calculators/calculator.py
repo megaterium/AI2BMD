@@ -3,7 +3,7 @@ from typing import Union
 from ase import Atoms
 from ase.calculators.calculator import Calculator, compare_atoms
 
-from AIMD.protein import Protein
+from src.AIMD.protein import Protein
 
 
 def check_state(self: Calculator, atoms: Union[Atoms, Protein], tol=1e-15):
