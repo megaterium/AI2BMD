@@ -130,7 +130,11 @@ class ProteinData(Data):
         return super().__inc__(key, value, *args, **kwargs)
 
 
-class ProteinDataBatch(Batch, ProteinData):
+class CommonMeta(type(Batch), type(ProteinData)):
+    pass
+
+
+class ProteinDataBatch(Batch, ProteinData, metaclass=CommonMeta):
     """
     Class representing a batch of protein structures as a graph.
     This class modifies the `get_example` method so that
