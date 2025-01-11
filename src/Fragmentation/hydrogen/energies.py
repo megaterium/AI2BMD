@@ -2,7 +2,7 @@ import torch
 import torch.nn.functional as F
 from torch_scatter import scatter_add
 
-from Fragmentation.hydrogen.topology import ProteinData
+from src.Fragmentation.hydrogen.topology import ProteinData
 
 
 @torch.jit.script
