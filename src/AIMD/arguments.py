@@ -3,8 +3,8 @@ import os
 
 import torch
 
-from Calculators.device_strategy import DeviceStrategy
-from utils.utils import src_dir
+from src.Calculators.device_strategy import DeviceStrategy
+from src.utils.utils import src_dir
 
 
 _args = None
