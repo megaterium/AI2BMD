@@ -2,9 +2,9 @@ from abc import ABC, abstractmethod
 
 from ase import Atoms
 
-from AIMD import arguments
-from AIMD.fragment import FragmentData
-from AIMD.protein import Protein
+from src.AIMD import arguments
+from src.AIMD.fragment import FragmentData
+from src.AIMD.protein import Protein
 
 
 class BaseFragment(ABC):
