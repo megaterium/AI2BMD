@@ -8,15 +8,15 @@ import numpy as np
 import torch
 from ase import Atoms
 
-from AIMD import arguments
-from AIMD.fragment import FragmentData
-from AIMD.preprocess import Preprocess
-from AIMD.protein import Protein
-from Calculators.device_strategy import DeviceStrategy
-from Fragmentation.basefrag import DipeptideFragment
-from Fragmentation.hydrogen import CTable, HydrogenOptimizer, ProteinData, ProteinDataBatch
-from utils.reference import fragment_atomic_numbers, fragment_info
-from utils.utils import numpy_to_torch, numpy_list_to_torch
+from src.AIMD import arguments
+from src.AIMD.fragment import FragmentData
+from src.AIMD.preprocess import Preprocess
+from src.AIMD.protein import Protein
+from src.Calculators.device_strategy import DeviceStrategy
+from src.Fragmentation.basefrag import DipeptideFragment
+from src.Fragmentation.hydrogen import CTable, HydrogenOptimizer, ProteinData, ProteinDataBatch
+from src.utils.reference import fragment_atomic_numbers, fragment_info
+from src.utils.utils import numpy_to_torch, numpy_list_to_torch
 
 
 class DistanceFragment(DipeptideFragment):
