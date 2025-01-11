@@ -3,7 +3,7 @@ import torch
 from ase.units import C, _eps0, kJ, mol, nm, pi
 from torch_scatter import scatter_add
 
-from AIMD.protein import Protein
+from src.AIMD.protein import Protein
 
 
 class MMNonBondedCalculator:
