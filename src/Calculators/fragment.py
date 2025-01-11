@@ -1,11 +1,11 @@
 from ase.calculators.calculator import Calculator
 
-from Calculators.device_strategy import DeviceStrategy
-from Calculators.bonded import DLBondedCalculator
-from Calculators.combiner import DipeptideCombiner
-from Calculators.nonbonded import MMNonBondedCalculator
-from Calculators.pme import PMENonBondedCalculator
-from utils.utils import WorkQueue, execution_wrapper
+from src.Calculators.device_strategy import DeviceStrategy
+from src.Calculators.bonded import DLBondedCalculator
+from src.Calculators.combiner import DipeptideCombiner
+from src.Calculators.nonbonded import MMNonBondedCalculator
+from src.Calculators.pme import PMENonBondedCalculator
+from src.utils.utils import WorkQueue, execution_wrapper
 
 
 nonbonded_calcs = {
