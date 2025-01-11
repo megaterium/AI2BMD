@@ -5,8 +5,8 @@ import subprocess
 
 import torch
 
-from AIMD.fragment import FragmentInfo
-from utils.system import get_physical_core_count
+from src.AIMD.fragment import FragmentInfo
+from src.utils.system import get_physical_core_count
 
 
 class DeviceStrategy:
