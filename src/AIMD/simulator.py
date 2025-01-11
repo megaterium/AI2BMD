@@ -13,16 +13,16 @@ from ase.md.md import MolecularDynamics
 from ase.md.nvtberendsen import NVTBerendsen
 from ase.md.velocitydistribution import MaxwellBoltzmannDistribution
 
-from AIMD import arguments, envflags
-from AIMD.protein import Protein
-from Calculators.device_strategy import DeviceStrategy
-from Calculators.fragment import FragmentCalculator
-from Calculators.qmmm import AsyncQMMM
-from Calculators.tinker_async import TinkerAsyncCalculator, TinkerRuntimeError
-from Calculators.visnet_calculator import ViSNetCalculator
-from utils.pdb import read_protein
-from utils.system import get_physical_core_count
-from utils.utils import (
+from src.AIMD import arguments, envflags
+from src.AIMD.protein import Protein
+from src.Calculators.device_strategy import DeviceStrategy
+from src.Calculators.fragment import FragmentCalculator
+from src.Calculators.qmmm import AsyncQMMM
+from src.Calculators.tinker_async import TinkerAsyncCalculator, TinkerRuntimeError
+from src.Calculators.visnet_calculator import ViSNetCalculator
+from src.utils.pdb import read_protein
+from src.utils.system import get_physical_core_count
+from src.utils.utils import (
     MDObserver,
     PDBAnalyzer,
     RNGPool,
