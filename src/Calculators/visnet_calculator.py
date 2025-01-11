@@ -12,12 +12,12 @@ import torch
 import torch.multiprocessing as mp
 from ase.calculators.calculator import Calculator
 
-from AIMD import envflags
-from AIMD.fragment import FragmentData
-from Calculators.device_strategy import DeviceStrategy
-from Calculators.async_utils import AsyncServer, AsyncClient
-from ViSNet.model.visnet import load_model
-from utils.utils import numpy_to_torch
+from src.AIMD import envflags
+from src.AIMD.fragment import FragmentData
+from src.Calculators.device_strategy import DeviceStrategy
+from src.Calculators.async_utils import AsyncServer, AsyncClient
+from src.ViSNet.model.visnet import load_model
+from src.utils.utils import numpy_to_torch
 
 
 class ViSNetModel:
