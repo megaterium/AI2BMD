@@ -6,14 +6,14 @@ from os import path as osp
 import numpy as np
 import torch
 
-from AIMD import arguments
-from AIMD.fragment import FragmentData
-from AIMD.protein import Protein
-from Calculators.combiner import DipeptideBondedCombiner
-from Calculators.device_strategy import DeviceStrategy
-from Calculators.visnet_calculator import ViSNetModelLike, get_visnet_model
-from Fragmentation import DistanceFragment
-from utils.utils import numpy_to_torch
+from src.AIMD import arguments
+from src.AIMD.fragment import FragmentData
+from src.AIMD.protein import Protein
+from src.Calculators.combiner import DipeptideBondedCombiner
+from src.Calculators.device_strategy import DeviceStrategy
+from src.Calculators.visnet_calculator import ViSNetModelLike, get_visnet_model
+from src.Fragmentation import DistanceFragment
+from src.utils.utils import numpy_to_torch
 
 
 class DLBondedCalculator:
