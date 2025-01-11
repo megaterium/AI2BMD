@@ -9,9 +9,9 @@ from ase import Atoms
 from ase.calculators.calculator import Calculator
 from ase.units import kcal, mol
 
-from AIMD import envflags
-from AIMD.preprocess import run_command
-from Calculators.async_utils import AsyncServer
+from src.AIMD import envflags
+from src.AIMD.preprocess import run_command
+from src.Calculators.async_utils import AsyncServer
 
 
 _tinker_instance_id = 0
